@@ -79,6 +79,7 @@ namespace Terminal
                 WriteLine("1. List categories");
                 WriteLine("2. Add category");
                 WriteLine("3. Add product to category");
+                
                 WriteLine();
                 WriteLine("Press Esc to return to main menu");
 
@@ -107,6 +108,7 @@ namespace Terminal
 
                         break;
 
+
                     case ConsoleKey.Escape:
 
                         shouldRun = false;
@@ -118,6 +120,7 @@ namespace Terminal
                 }
             }
         }
+
 
         private static void AddProductToCategory()
         {
@@ -278,7 +281,7 @@ namespace Terminal
             }
 
             WriteLine();
-            Write("(V)iew");
+            Write("(V)iew  (E)dit (D)elete   (L)eave");
 
             bool shouldRun = true;
 
@@ -302,6 +305,125 @@ namespace Terminal
                         }
 
                         break;
+                    case ConsoleKey.E:
+
+                        Write("\r" + new string(' ', WindowWidth) + "\r");
+
+                        Write("Edit category (ID): ");
+
+                        var categoryid = ReadLine();
+
+                        Clear();
+
+
+                        var response = httpClient.GetAsync($"/api/productcategory/{categoryid}").Result;
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            WriteLine("Category not found");
+                            Thread.Sleep(2000);
+                            return;
+                        }
+
+                        var json = response.Content.ReadAsStringAsync().Result;
+
+                        var cat = JsonConvert.DeserializeObject<Category>(json);
+
+                        WriteLine($"ID: {cat.Id}");
+                        WriteLine($"Name: {cat.Name}");
+                        WriteLine($"Description: {cat.Description}");
+
+                        WriteLine($"UrlSlug: {cat.UrlSlug}");
+                        WriteLine($"ImageUrl: {cat.ImageUrl}");
+                        WriteLine("===================================================");
+
+                        ReadKey(true);
+
+                        WriteLine($"ID: {cat .Id}");
+
+                        Write("Name: ");
+                        var name = ReadLine();
+
+                        Write("Description: ");
+                        var description = ReadLine();
+                        Write("Image URL: ");
+                        var imageUrl = new Uri(ReadLine());
+
+                        var urlSlug = name.Replace(' ', '-').ToLower();
+
+
+                        var updatedCategory = new Category(
+                                        cat.Id,
+                                       name,
+                                       description,
+                                       urlSlug
+
+
+                                       );
+
+                        var serializedUpdatedCategory = JsonConvert.SerializeObject(updatedCategory);
+
+                        var content = new StringContent(serializedUpdatedCategory, Encoding.UTF8, "application/json");
+
+
+
+                         
+                        response = httpClient.PutAsync($"/api/category/{cat.Id}", content).Result;
+                        // response = httpClient.PutAsync($"/api/category/{categoryid}", content).Result;
+                      //  response = httpClient.PutAsync("category", content).Result;
+
+                        Clear();
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            WriteLine("Category updated");
+                        }
+                        else
+                        {
+                            WriteLine("Failed to update category");
+                            //WriteLine(response.)
+                        }
+
+                        Thread.Sleep(2000);
+
+
+                        break;
+                    case ConsoleKey.D:
+
+                        Write("\r" + new string(' ', WindowWidth) + "\r");
+
+                        Write(" Delete (ID) :");
+
+                        var categoryId = ushort.Parse(ReadLine());
+
+                        // TODO: Make HTTP DELETE request to delete resource...
+                        var responses = httpClient.DeleteAsync($"category/{categoryId}")
+                            .GetAwaiter()
+                            .GetResult();
+
+                        Clear();
+
+                        if (responses.IsSuccessStatusCode)
+                        {
+                            WriteLine("Category delete");
+                        }
+                        else
+                        {
+                            WriteLine("Failed!");
+                        }
+
+                        Thread.Sleep(2000);
+
+
+
+                break;
+
+                    case ConsoleKey.L:
+
+                        shouldRun = false;
+
+                        break;
+                        
 
                     case ConsoleKey.Escape:
 
@@ -369,6 +491,7 @@ namespace Terminal
 
                 WriteLine("1. List products");
                 WriteLine("2. Add product");
+               
                 WriteLine();
                 WriteLine("Press Esc to return to main menu");
 
@@ -386,8 +509,9 @@ namespace Terminal
                     case ConsoleKey.NumPad2:
 
                        LäggProduct ();
-
                         break;
+
+                 
 
                     case ConsoleKey.Escape:
 
@@ -502,7 +626,7 @@ namespace Terminal
             }
 
             WriteLine();
-            Write("(V)iew");
+            Write("(V)iew  (E)dit  (D)elete  (L)eave");
 
             bool shouldRun = true;
 
@@ -514,7 +638,7 @@ namespace Terminal
                 {
                     case ConsoleKey.V:
                         Write("\r" + new string(' ', WindowWidth) + "\r");
-                        Write("View (ID): ");
+                        Write("View (ID) " );
 
                         int.TryParse(ReadLine(), out int id);
 
@@ -526,6 +650,143 @@ namespace Terminal
                         }
 
                         break;
+                    case ConsoleKey.E:
+                       Write("\r" + new string(' ', WindowWidth) + "\r");
+                        Write("Edit product (ID): ");
+
+                        var thisid = ReadLine();
+
+                        Clear();
+
+                        //  var endpoint = "https://localhost:44343/api/productcategory";
+                        var response = httpClient.GetAsync($"/api/productcategory/{thisid}").Result;
+                        //  var response = httpClient.GetAsync("https://localhost:44343/api/productcategory").Result;
+
+
+
+
+
+                        if (!response.IsSuccessStatusCode)
+                        {
+                            WriteLine("Product not found");
+                            Thread.Sleep(2000);
+                            return;
+                        }
+
+                        var json = response.Content.ReadAsStringAsync().Result;
+
+                        var newproduct = JsonConvert.DeserializeObject<Product>(json);
+
+                        WriteLine($"ID: {newproduct.Id}");
+                        WriteLine($"Title: {newproduct.Name}");
+                        WriteLine($"Description: {newproduct.Description}");
+                        WriteLine($"Price: {newproduct.Price}");
+                        WriteLine($"UrlSlug: {newproduct.UrlSlug}");
+                        WriteLine($"ImageUrl: {newproduct.ImageUrl}");
+                        WriteLine("===================================================");
+
+                        ReadKey(true);
+
+                        WriteLine($"ID: {newproduct.Id}");
+
+                        Write("Name: ");
+                        var name = ReadLine();
+
+                        Write("Description: ");
+                        var description = ReadLine();
+
+
+
+
+                        Write("Price: ");
+                        int.TryParse(ReadLine(), out int price);
+
+                        Write("Image URL: ");
+                        var imageUrl = new Uri(ReadLine());
+
+                        var urlSlug = name.Replace(' ', '-').ToLower();
+
+
+                        var updateProduct = new Product(
+                                      newproduct.Id,
+                                       name,
+                                       description,
+                                       price,
+                                       imageUrl,
+                                       urlSlug
+                                       );
+
+
+
+
+
+
+
+                        var serializedUpdatedProduct = JsonConvert.SerializeObject ( updateProduct);
+
+                        var content = new StringContent(serializedUpdatedProduct, Encoding.UTF8, "application/json");
+
+                       // response = httpClient.PutAsync($"/api/productcategory{newproduct.Id}", content).Result;
+
+                        response = httpClient.PutAsync($"/api/productcategory/{newproduct.Id}", content).Result;
+
+
+                        // response = httpClient.PutAsync($"/api/product/{prod.Id}", content).Result;
+                        //  response = httpClient.GetAsync("https://localhost:44343/api/productcategory" ).Result;
+                        //  response = httpClient.PutAsync($"/https://localhost:44343/api/productcategory" ,content).Result;
+                        //response = httpClient.PutAsync("ProductCategory", content).Result;
+
+                        Clear();
+
+                        if (response.IsSuccessStatusCode)
+                        {
+                            WriteLine("Product updated");
+                        }
+                        else
+                        {
+                            WriteLine("Failed to update product");
+                            //WriteLine(response.)
+                        }
+
+                        Thread.Sleep(2000);
+
+                
+                break;
+                    case ConsoleKey.D:
+
+                        Write("\r" + new string(' ', WindowWidth) + "\r");
+
+                        Write(" Delete (ID) :       ");
+
+                        var prodId = ushort.Parse(ReadLine());
+
+                        // TODO: Make HTTP DELETE request to delete resource...
+                        var responses = httpClient.DeleteAsync($"productcategory/{prodId}")
+                            .GetAwaiter()
+                            .GetResult();
+
+                        Clear();
+
+                        if (responses.IsSuccessStatusCode)
+                        {
+                            WriteLine("Product delete");
+                        }
+                        else
+                        {
+                            WriteLine("Failed!");
+                        }
+
+                        Thread.Sleep(2000);
+
+
+
+
+
+                break;
+                    case ConsoleKey.L:
+                        shouldRun = false;
+                        break;
+
 
                     case ConsoleKey.Escape:
 

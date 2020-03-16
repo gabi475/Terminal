@@ -15,6 +15,21 @@ namespace Terminal.Models
             ImageUrl = imageUrl;
             UrlSlug = urlSlug;
         }
+    
+
+    public Product()
+    {
+
+    }
+
+        public Product(int id, string name, string description,int price,Uri imageUrl,string urlSlug)
+           : this(name, description,price,imageUrl,urlSlug)
+        {
+            Id = id;
+        }
+
+       
+
 
         public int Id { get; set; }
 

@@ -13,10 +13,14 @@ namespace Terminal.Models
             ProductId = productId;
             CategoryId = categoryId;
         }
+        public ProductCategory()
+        {
 
-        public int ProductId { get; protected set; }
-        public Product Product { get; protected set; }
-        public int CategoryId { get; protected set; }
-        public Category Category { get; protected set; }
+        }
+
+        public int ProductId { get; set; }
+        public Product Product { get;  set; }
+        public int CategoryId { get;  set; }
+        public Category Category { get;  set; }
     }
 }
